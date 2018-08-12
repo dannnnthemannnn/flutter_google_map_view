@@ -22,14 +22,15 @@ class StaticMapProvider {
   ///
 
   Uri getStaticUri(Location center, int zoomLevel,
-      {int width, int height, StaticMapViewType mapType}) {
+      {int width, int height, StaticMapViewType mapType, String style}) {
     return _buildUrl(
         null,
         center,
         zoomLevel ?? defaultZoomLevel,
         width ?? defaultWidth,
         height ?? defaultHeight,
-        mapType ?? defaultMaptype);
+        mapType ?? defaultMaptype,
+        style ?? style);
   }
 
   ///
@@ -57,7 +58,7 @@ class StaticMapProvider {
       Location center,
       int zoomLevel}) {
     return _buildUrl(markers, center, zoomLevel, width ?? defaultWidth,
-        height ?? defaultHeight, maptype ?? defaultMaptype);
+        height ?? defaultHeight, maptype ?? defaultMaptype, '');
   }
 
   ///
@@ -72,11 +73,11 @@ class StaticMapProvider {
     var center = await mapView.centerLocation;
     var zoom = await mapView.zoomLevel;
     return _buildUrl(markers, center, zoom.toInt(), width ?? defaultWidth,
-        height ?? defaultHeight, maptype ?? defaultMaptype);
+        height ?? defaultHeight, maptype ?? defaultMaptype, '');
   }
 
   Uri _buildUrl(List<Marker> locations, Location center, int zoomLevel,
-      int width, int height, StaticMapViewType mapType) {
+      int width, int height, StaticMapViewType mapType, String style) {
     var finalUri = new UriBuilder()
       ..scheme = 'https'
       ..host = 'maps.googleapis.com'
@@ -95,6 +96,7 @@ class StaticMapProvider {
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'maptype': _getMapTypeQueryParam(mapType),
         'key': googleMapsApiKey,
+        'style': style,
       };
     } else {
       List<String> markers = new List();
@@ -110,6 +112,7 @@ class StaticMapProvider {
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'maptype': _getMapTypeQueryParam(mapType),
         'key': googleMapsApiKey,
+        'style': style,
       };
     }
     if (center != null)
