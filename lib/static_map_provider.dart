@@ -22,7 +22,7 @@ class StaticMapProvider {
   ///
 
   Uri getStaticUri(Location center, int zoomLevel,
-      {int width, int height, StaticMapViewType mapType, String style}) {
+      {int width, int height, StaticMapViewType mapType, List<String> styles}) {
     return _buildUrl(
         null,
         center,
@@ -30,7 +30,7 @@ class StaticMapProvider {
         width ?? defaultWidth,
         height ?? defaultHeight,
         mapType ?? defaultMaptype,
-        style ?? style);
+        styles ?? styles);
   }
 
   ///
@@ -42,7 +42,7 @@ class StaticMapProvider {
   Uri getStaticUriWithMarkers(List<Marker> markers,
       {int width, int height, StaticMapViewType maptype, Location center}) {
     return _buildUrl(markers, center, null, width ?? defaultWidth,
-        height ?? defaultHeight, maptype ?? defaultMaptype, '');
+        height ?? defaultHeight, maptype ?? defaultMaptype, []);
   }
 
   ///
@@ -58,7 +58,7 @@ class StaticMapProvider {
       Location center,
       int zoomLevel}) {
     return _buildUrl(markers, center, zoomLevel, width ?? defaultWidth,
-        height ?? defaultHeight, maptype ?? defaultMaptype, '');
+        height ?? defaultHeight, maptype ?? defaultMaptype, []);
   }
 
   ///
