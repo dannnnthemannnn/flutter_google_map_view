@@ -73,16 +73,12 @@ class StaticMapProvider {
     var center = await mapView.centerLocation;
     var zoom = await mapView.zoomLevel;
     return _buildUrl(markers, center, zoom.toInt(), width ?? defaultWidth,
-        height ?? defaultHeight, maptype ?? defaultMaptype, '');
+        height ?? defaultHeight, maptype ?? defaultMaptype, []);
   }
 
   Uri _buildUrl(List<Marker> locations, Location center, int zoomLevel,
-      int width, int height, StaticMapViewType mapType, String style) {
-    var finalUri = new UriBuilder()
-      ..scheme = 'https'
-      ..host = 'maps.googleapis.com'
-      ..port = 443
-      ..path = '/maps/api/staticmap';
+      int width, int height, StaticMapViewType mapType, List<String> styles) {
+    Map<String, dynamic> parameters;
 
     if (center == null && (locations == null || locations.length == 0)) {
       center = Locations.centerOfUSA;
@@ -90,13 +86,13 @@ class StaticMapProvider {
 
     if (locations == null || locations.length == 0) {
       if (center == null) center = Locations.centerOfUSA;
-      finalUri.queryParameters = {
+      parameters = {
         'center': '${center.latitude},${center.longitude}',
         'zoom': zoomLevel.toString(),
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'maptype': _getMapTypeQueryParam(mapType),
         'key': googleMapsApiKey,
-        'style': style,
+        'style': styles,
       };
     } else {
       List<String> markers = new List();
@@ -107,20 +103,24 @@ class StaticMapProvider {
         markers.add(marker);
       });
       String markersString = markers.join('|');
-      finalUri.queryParameters = {
+      parameters = {
         'markers': markersString,
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'maptype': _getMapTypeQueryParam(mapType),
         'key': googleMapsApiKey,
-        'style': style,
+        'style': styles,
       };
     }
     if (center != null)
-      finalUri.queryParameters['center'] =
-          '${center.latitude},${center.longitude}';
+      parameters['center'] = '${center.latitude},${center.longitude}';
 
-    var uri = finalUri.build();
-    return uri;
+    return Uri(
+      scheme: 'https',
+      host: 'maps.googleapis.com',
+      port: 443,
+      path: '/maps/api/staticmap',
+      queryParameters: parameters,
+    );
   }
 
   String _getMapTypeQueryParam(StaticMapViewType maptype) {
